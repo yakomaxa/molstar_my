@@ -786,7 +786,7 @@ const StructureSelectionFromScript = PluginStateTransform.BuiltIn({
     from: SO.Molecule.Structure,
     to: SO.Molecule.Structure,
     params: () => ({
-        script: PD.Script({ language: 'pymol', expression: 'chain A' }),
+        script: PD.Script({ language: 'jmol', expression: 'all' }),
         label: PD.Optional(PD.Text(''))
     })
 })({

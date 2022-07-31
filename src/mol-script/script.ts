@@ -19,7 +19,7 @@ function Script(expression: string, language: Script.Language): Script {
 }
 
 namespace Script {
-    export type Language = 'pymol'
+    export type Language = 'jmol'
 
     export function is(x: any): x is Script {
         return !!x && typeof (x as Script).expression === 'string' && !!(x as Script).language;
@@ -31,8 +31,8 @@ namespace Script {
 
     export function toExpression(script: Script): Expression {
         switch (script.language) {
-	case 'pymol':
-	    const parsed = parse("pymol",script.expression);
+	case 'jmol':
+	    const parsed = parse("jmol",script.expression);
 	    return parsed as Expression;	   
         }
         throw new Error('unsupported script language');
