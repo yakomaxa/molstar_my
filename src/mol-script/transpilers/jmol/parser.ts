@@ -136,6 +136,12 @@ const lang = P.MonadicParser.createLanguage({
       r.Resname.map((x: string) => B.struct.generator.atomGroups({
         'residue-test': B.core.rel.eq([ B.ammp('label_comp_id'), x ])
       })),
+      r.BracketedResname.map((x: string) => B.struct.generator.atomGroups({
+        'residue-test': B.core.rel.eq([ B.ammp('label_comp_id'), x ])
+      })),
+　　　r.ResnoRange.map((x: string) => B.struct.generator.atomGroups({
+        'residue-test': B.core.rel.eq([ B.ammp('label_comp_id'), x ])
+      })),
     )
   },
 
@@ -164,22 +170,22 @@ AtomExpression: function(r:any) {
   Element: () => P.MonadicParser.regexp(/_([A-Za-z]{1,3})/, 1).desc('element'),
   Atomname: () => P.MonadicParser.regexp(/\.([a-zA-Z0-9]{1,4})/, 1).map(B.atomName).desc('atomname'),
   Resname: () => P.MonadicParser.regexp(/[a-zA-Z0-9]{1,4}/).desc('resname'),
-Resno: (r:any) => r.Integer.desc('resno'),
+　Resno: (r:any) => r.Integer.desc('resno'),
   Altloc: () => P.MonadicParser.regexp(/%([a-zA-Z0-9])/, 1).desc('altloc'),
   Inscode: () => P.MonadicParser.regexp(/\^([a-zA-Z0-9])/, 1).desc('inscode'),
 
-  // BracketedResname: function (r) {
-  //   return P.MonadicParser.regexp(/\.([a-zA-Z0-9]{1,4})/, 1)
-  //     .desc('bracketed-resname')
-  //   // [0SD]
-  // },
+BracketedResname: function (r:any) {
+     return P.MonadicParser.regexp(/\.([a-zA-Z0-9]{1,4})/, 1)
+       .desc('bracketed-resname')
+     // [0SD]
+   },
 
-  // ResnoRange: function (r) {
-  //   return P.MonadicParser.regexp(/\.([\s]){1,3}/, 1)
-  //     .desc('resno-range')
-  //   // 123-200
-  //   // -12--3
-  // },
+ResnoRange: function (r:any) {
+     return P.MonadicParser.regexp(/\.([\s]){1,3}/, 1)
+       .desc('resno-range')
+     // 123-200
+     // -12--3
+   },
 
   Keywords: () => P.MonadicParser.alt(...h.getKeywordRules(keywords)),
 
