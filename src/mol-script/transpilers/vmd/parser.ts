@@ -57,29 +57,36 @@ const valueOperators: OperatorList = [
         type: h.binaryLeft,
         rule: P.MonadicParser.alt(P.MonadicParser.regexp(/\s*(=~|==|>=|<=|=|!=|>|<)\s*/, 1), P.MonadicParser.whitespace.result('=')),
         map: (op, e1, e2) => {
-            // console.log(op, e1, e2)
+            //	    console.log(e1.head !== undefined && e2.head !==undefined)
+            console.log(op, e1, e2);
             let expr;
-            if (e1.head === 'structure-query.atom-property.macromolecular.secondary-structure-flags') {
-                expr = B.core.flags.hasAny([e1, sstrucMap(e2)]);
-            } else if (e2.head === 'structure-query.atom-property.macromolecular.secondary-structure-flags') {
-                expr = B.core.flags.hasAny([e2, sstrucMap(e1)]);
-            } else if (e1.head === 'core.type.regex') {
-                expr = B.core.str.match([e1, B.core.type.str([e2])]);
-            } else if (e2.head === 'core.type.regex') {
-                expr = B.core.str.match([e2, B.core.type.str([e1])]);
-            } else if (op === '=~') {
+	    if (e1.head !== undefined) {
+                if (e1.head.name === 'structure-query.atom-property.macromolecular.secondary-structure-flags') {
+		    expr = B.core.flags.hasAny([e1, sstrucMap(e2)]);
+                }
+                if (e1.head.name === 'core.type.regex') {
+		    expr = B.core.str.match([e1, B.core.type.str([e2])]);
+                }
+	    } else if (e2.head !== undefined) {
+                if (e2.head.name === 'structure-query.atom-property.macromolecular.secondary-structure-flags') {
+		    expr = B.core.flags.hasAny([e2, sstrucMap(e1)]);
+                }
+                if (e2.head.name === 'core.type.regex') {
+		    expr = B.core.str.match([e2, B.core.type.str([e1])]);
+                }
+	    } else if (op === '=~') {
                 if (e1.head) {
-                    expr = B.core.str.match([
+		    expr = B.core.str.match([
                         B.core.type.regex([`^${e2}$`, 'i']),
                         B.core.type.str([e1])
-                    ]);
+		    ]);
                 } else {
-                    expr = B.core.str.match([
+		    expr = B.core.str.match([
                         B.core.type.regex([`^${e1}$`, 'i']),
                         B.core.type.str([e2])
-                    ]);
+		    ]);
                 }
-            }
+	    }
             if (!expr) {
                 if (e1.head) e2 = h.wrapValue(e1, e2);
                 if (e2.head) e1 = h.wrapValue(e2, e1);
@@ -176,10 +183,10 @@ const lang = P.MonadicParser.createLanguage({
                 test = rangeTest ? rangeTest : listTest;
             }
 
-	    //  return B.struct.generator.atomGroups({ [h.testLevel(property)]: test });
+	    return B.struct.generator.atomGroups({ [h.testLevel(property)]: test });
 	    //  h.testLevel is not working for unknown reason, so relaced it by hardcoded 'atom-test'
             //	    console.log(h.testLevel(property));
-	    return B.struct.generator.atomGroups({ 'atom-test': test });
+	    // return B.struct.generator.atomGroups({ 'atom-test': test });
         });
     },
 
@@ -247,7 +254,7 @@ const lang = P.MonadicParser.createLanguage({
         return P.MonadicParser.alt(
             r.ValueOperator.map((x: any) => {
                 // if (!x.head || x.head.startsWith('core.math') || x.head.startsWith('structure-query.atom-property')) {
-                if (!x.head || !x.head.startsWith('structure-query.generator')) {
+                if (!x.head.name || !x.head.name.startsWith('structure-query.generator')) {
                     throw new Error(`values must be part of an comparison, value '${x}'`);
                 } else {
                     return x as any;
