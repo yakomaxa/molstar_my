@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2017-2021 mol* contributors, licensed under MIT, See LICENSE file for more info.
- * @author Alexander Rose <alexander.rose@weirdbyte.de>                                                                                      * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>                                                                                 *
- * @author Koya Sakuma                                                                                                                       * This module was based on jmol transpiler from MolQL and modified in similar manner as pymol and vmd tranpilers.
+ *
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
 **/
 
 
@@ -20,7 +20,7 @@ function nucleicExpr() {
     return B.struct.combinator.merge([
         B.struct.generator.atomGroups({
 	  'residue-test': B.core.set.has([
-              B.core.type.set(['G', 'C', 'A', 'T', 'U', 'I', 'DG', 'DC', 'DA', 'DT', 'DU', 'DI', '+G', '+C', '+A', '+T', '+U', '+I']),
+                B.core.type.set(['G', 'C', 'A', 'T', 'U', 'I', 'DG', 'DC', 'DA', 'DT', 'DU', 'DI', '+G', '+C', '+A', '+T', '+U', '+I']),
                 B.ammp('label_comp_id')
 	  ])
         }),
@@ -29,11 +29,10 @@ function nucleicExpr() {
                 'group-by': B.ammp('residueKey')
 	    }),
 	    test: B.core.logic.and([
-              B.core.set.isSubset([
-                // B.core.type.set([ 'P', 'O1P', 'O2P' ]),
-                h.atomNameSet(['P']),
-                B.ammpSet('label_atom_id')
-              ]),
+                B.core.set.isSubset([
+                    h.atomNameSet(['P']),
+                    B.ammpSet('label_atom_id')
+                ]),
 	    ])
         }),
         B.struct.filter.pick({

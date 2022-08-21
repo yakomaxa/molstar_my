@@ -3,6 +3,7 @@
  *
  * @author Alexander Rose <alexander.rose@weirdbyte.de>
  * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
+ * @author Koya Sakuma
  */
 
 import { MolScriptBuilder } from '../../../mol-script/language/builder';
@@ -10,35 +11,67 @@ const B = MolScriptBuilder;
 import { PropertyDict } from '../types';
 
 const reFloat = /[-+]?[0-9]*\.?[0-9]+/;
-// const rePosInt = /[0-9]+/;
 
 function atomNameListMap(x: string) { return x.split('+').map(B.atomName); }
 function listMap(x: string) { return x.split('+').map(x => x.replace(/^["']|["']$/g, '')); }
-function rangeMap(x: string) {
-    const [min, max] = x.split('-').map(x => parseInt(x));
-    return { min, max };
-}
+
 function listOrRangeMap(x: string) {
-    if (x.includes('-') && x.includes('+')){
-	const pSplit = x.split('+').map(x => x.replace(/^["']|["']$/g, ''));
-        const res : number[] =[];
-        pSplit.forEach( x => {
-            if (x.includes('-')){
+    // cases
+    if (x.includes('-') && x.includes('+')) {
+        const pSplit = x.split('+').map(x => x.replace(/^["']|["']$/g, ''));
+        const res: number[] = [];
+        pSplit.forEach(x => {
+	    if (x.includes('-') && !x.startsWith('-')) {
                 const [min, max] = x.split('-').map(x=>parseInt(x));
-                for (var i = min;  i <= max;  i++){
-                    res.push(i);
+                for (let i = min; i <= max; i++) {
+		    res.push(i);
                 }
-            }else{
+	    } else if (x.includes('-') && x.startsWith('-') && x.match(/[0-9]+-[-0-9]+/)) {
+                const min = -parseInt(x.split('-')[1]);
+                let max;
+                if (x.includes('--')) {
+		    max = -parseInt(x.split('-')[3]);
+                } else {
+		    max = parseInt(x.split('-')[2]);
+                }
+                for (let i = min; i <= max; i++) {
+		    res.push(i);
+                }
+	    } else if (x.includes('-') && x.startsWith('-') && !x.match(/[0-9]+-[-0-9]+/)) {
                 res.push(parseInt(x));
-            }
+	    } else {
+                res.push(parseInt(x));
+	    }
         });
         return res;
-    }else if(x.includes('-') && !x.includes('+')){
-        return rangeMap(x)
-    }else if(!x.includes('-') && x.includes('+')){
-        return listMap(x).map(x => parseInt(x))
-    }else{
-	return listMap(x).map(x => parseInt(x))
+    } else if (x.includes('-') && !x.includes('+')) {
+        const res: number[] = [];
+        if (!x.startsWith('-')) {
+            const [min, max] = x.split('-').map(x=>parseInt(x));
+            for (let i = min; i <= max; i++) {
+                res.push(i);
+            }
+        } else if (x.startsWith('-') && x.match(/[0-9]+-[-0-9]+/)) {
+	    const min = -parseInt(x.split('-')[1]);
+	    let max;
+	    if (x.includes('--')) {
+                max = -parseInt(x.split('-')[3]);
+	    } else {
+                max = parseInt(x.split('-')[2]);
+	    }
+	    for (let i = min; i <= max; i++) {
+                res.push(i);
+            }
+        } else if (x.startsWith('-') && !x.match(/[0-9]+-[-0-9]+/)) {
+	    res.push(parseInt(x));
+        } else {
+            res.push(parseInt(x));
+        }
+        return res;
+    } else if (!x.includes('-') && x.includes('+')) {
+        return listMap(x).map(x => parseInt(x));
+    } else {
+        return [parseInt(x)];
     }
 }
 

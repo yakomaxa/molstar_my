@@ -6,7 +6,6 @@
 
 import { SetUtils } from '../../../../mol-util/set';
 import { Unit } from '../../structure';
-// import { QueryContext, QueryFn, QueryPredicate } from '../context';
 import { QueryContext, QueryFn } from '../context';
 import { StructureQuery } from '../query';
 import { StructureSelection } from '../selection';
@@ -17,7 +16,6 @@ import { Structure } from '../../structure/structure';
 import { StructureElement } from '../../structure/element';
 import { SortedArray } from '../../../../mol-data/int';
 
-// export function pick(query: StructureQuery, pred: QueryPredicate): StructureQuery {
 export function pick(query: StructureQuery, pred: QueryFn<any>): StructureQuery {
     return ctx => {
         const sel = query(ctx);
@@ -51,34 +49,6 @@ export function first(query: StructureQuery): StructureQuery {
         return ret.getSelection();
     };
 }
-
-// export interface UnitTypeProperties { atomic?: QueryFn, coarse?: QueryFn }
-/*
-export function getCurrentStructureProperties(ctx: QueryContext, props: UnitTypeProperties, set: Set<any>) {
-    const { units } = ctx.currentStructure;
-    const l = ctx.pushCurrentElement();
-
-    l.structure = ctx.currentStructure;
-    for (const unit of units) {
-        l.unit = unit;
-        const elements = unit.elements;
-
-        let fn;
-        if (Unit.isAtomic(unit)) fn = props.atomic;
-        else fn = props.coarse;
-        if (!fn) continue;
-
-        for (let j = 0, _j = elements.length; j < _j; j++) {
-            l.element = elements[j];
-            set.add(fn(ctx));
-        }
-
-        ctx.throwIfTimedOut();
-    }
-    ctx.popCurrentElement();
-    return set;
-}
-*/
 
 export function getCurrentStructureProperties(ctx: QueryContext, props: QueryFn<any>, set: Set<any>) {
     const { units } = ctx.currentStructure;

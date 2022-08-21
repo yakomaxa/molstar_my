@@ -1,10 +1,8 @@
 /**
  * Copyright (c) 2017-2021 mol* contributors, licensed under MIT, See LICENSE file for more info.
- * @author Alexander Rose <alexander.rose@weirdbyte.de>
- * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
- *
- * @author Koya Sakuma
- * This module was taken from MolQL and modified in similar manner as pymol and vmd tranpilers.                                              **/
+ * @author Koya Sakuma < koya.sakuma.work@gmail.com>
+ * Adapted from MolQL project
+ **/
 
 
 import * as P from '../../../mol-util/monadic-parser';
@@ -18,11 +16,6 @@ import { AtomGroupArgs } from '../types';
 import { Transpiler } from '../transpiler';
 import { OperatorList } from '../types';
 
-// const propertiesDict = h.getPropertyRules(properties);
-
-// const slash = P.MonadicParser.string('/');
-
-
 // <, <=, =, >=, >, !=, and LIKE
 const valueOperators: OperatorList = [
     {
@@ -33,7 +26,6 @@ const valueOperators: OperatorList = [
         type: h.binaryLeft,
         rule: P.MonadicParser.regexp(/\s*(LIKE|>=|<=|=|!=|>|<)\s*/i, 1),
         map: (op, e1, e2) => {
-            console.log(op, e1, e2);
             let expr;
 	    if (e1 === 'structure') {
                 expr = B.core.flags.hasAny([B.ammp('secondaryStructureFlags'), structureMap(e2)]);
@@ -172,14 +164,16 @@ const lang = P.MonadicParser.createLanguage({
     Altloc: () => P.MonadicParser.regexp(/%([a-zA-Z0-9])/, 1).desc('altloc'),
     Inscode: () => P.MonadicParser.regexp(/\^([a-zA-Z0-9])/, 1).desc('inscode'),
 
+
+    // TODO: Support bracketed resname and resno range.
     // BracketedResname: function (r) {
-    //   return P.MonadicParser.regexp(/\.([a-zA-Z0-9]{1,4})/, 1)
+    //   return P.regex(/\.([a-zA-Z0-9]{1,4})/, 1)
     //     .desc('bracketed-resname')
     //   // [0SD]
     // },
 
     // ResnoRange: function (r) {
-    //   return P.MonadicParser.regexp(/\.([\s]){1,3}/, 1)
+    //   return P.regex(/\.([\s]){1,3}/, 1)
     //     .desc('resno-range')
     //   // 123-200
     //   // -12--3
@@ -241,7 +235,7 @@ const lang = P.MonadicParser.createLanguage({
     ValueQuery: function (r: any) {
         return P.MonadicParser.alt(
             r.ValueOperator.map((x: any) => {
-                if (x.head.name) {
+                if (x.head) {
                     if (x.head.name.startsWith('structure-query.generator')) return x;
                 } else {
                     if (typeof x === 'string' && x.length <= 4) {

@@ -1,10 +1,7 @@
 /*
  * Copyright (c) 2017-2021 mol* contributors, licensed under MIT, See LICENSE file for more info.
- * @author Alexander Rose <alexander.rose@weirdbyte.de>
- * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
- *
- * @author Koya Sakuma
- * This module was taken from MolQL and modified in similar manner as pymol and vmd tranpilers.                                             \
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
+ * Adapted from MolQL project
  */
 
 
@@ -13,7 +10,6 @@ import * as h from '../helper';
 import { MolScriptBuilder } from '../../../mol-script/language/builder';
 const B = MolScriptBuilder;
 import { OperatorList } from '../types';
-// import { Expression } from '../../language/expression';
 
 
 export const operators: OperatorList = [

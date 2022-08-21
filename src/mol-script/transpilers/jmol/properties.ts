@@ -1,10 +1,7 @@
 /*
  * Copyright (c) 2017-2021 mol* contributors, licensed under MIT, See LICENSE file for more info.
- * @author Alexander Rose <alexander.rose@weirdbyte.de>
- * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
- *
- * @author Koya Sakuma
- * This module was taken from MolQL and modified in similar manner as pymol and vmd tranpilers.                                             \
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
+ * Adapted from MolQL project
 */
 
 import { MolScriptBuilder } from '../../../mol-script/language/builder';
@@ -40,12 +37,14 @@ const structureDict: {[key: string]: string} = {
     9: 'pi',
 };
 export function structureMap(x: any) {
-    if (x.head && x.head === 'core.type.regex') x = x.args[0].replace(/^\^|\$$/g, '');
-    x = structureDict[x.toString().toLowerCase()] || 'none';
-    if (['dna', 'rna', 'carbohydrate'].indexOf(x) !== -1) {
-        throw new Error("values 'dna', 'rna', 'carbohydrate' not yet supported for 'structure' property");
-    } else {
-        return B.struct.type.secondaryStructureFlags([x]);
+    if (x.head) {
+        if (x.head.name && x.head.name === 'core.type.regex') x = x.args[0].replace(/^\^|\$$/g, '');
+        x = structureDict[x.toString().toLowerCase()] || 'none';
+        if (['dna', 'rna', 'carbohydrate'].indexOf(x) !== -1) {
+            throw new Error("values 'dna', 'rna', 'carbohydrate' not yet supported for 'structure' property");
+        } else {
+            return B.struct.type.secondaryStructureFlags([x]);
+        }
     }
 }
 

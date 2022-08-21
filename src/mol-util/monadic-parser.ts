@@ -2,15 +2,11 @@
  * Copyright (c) 2018 mol* contributors, licensed under MIT, See LICENSE file for more info.
  *
  * @author David Sehnal <david.sehnal@gmail.com>
- */
-/**
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
+ **
  * Adapted from Parsimmon (https://github.com/jneen/parsimmon)
  * Copyright (c) 2011-present J. Adkisson (http://jneen.net).
- */
-/**
-*  @author Koya Sakuma
-*  implementation of seqMap for mol-script/transpiler/helper.ts
-**/
+ **/
 
 export class MonadicParser<A> {
     constructor(public _: MonadicParser.Action<A>) { }
@@ -22,7 +18,6 @@ export class MonadicParser<A> {
         }
         return { success: false, index: makeLineColumnIndex(input, result.furthest), expected: result.expected };
     };
-
 
     tryParse(str: string) {
         const result = this.parse(str);
@@ -120,7 +115,6 @@ export class MonadicParser<A> {
     atLeast(n: number) {
         return MonadicParser.seq(this.times(n), this.many()).map(r => [...r[0], ...r[1]]);
     };
-
 
     map<B>(f: (a: A) => B): MonadicParser<B> {
         return new MonadicParser((input, i) => {
@@ -239,16 +233,15 @@ export namespace MonadicParser {
 
     export type Result<T> = Success<T> | Failure
 
-
-    export function seqMap(a: MonadicParser<any>, b: MonadicParser<any>, c: any) {
+    export function seqMap<A, B>(a: MonadicParser<A>, b: MonadicParser<B>, c: any) {
         const args = [].slice.call(arguments);
         if (args.length === 0) {
-	    throw new Error('seqMap needs at least one argument');
+            throw new Error('seqMap needs at least one argument');
         }
         const mapper = args.pop();
         assertFunction(mapper);
         return seq.apply(null, args).map(function (results: any) {
-	    return mapper.apply(null, results);
+            return mapper.apply(null, results);
         });
     }
 
@@ -261,7 +254,6 @@ export namespace MonadicParser {
         }
         return language;
     }
-
 
     export function seq<A>(a: MonadicParser<A>): MonadicParser<[A]>
     export function seq<A, B>(a: MonadicParser<A>, b: MonadicParser<B>): MonadicParser<[A, B]>
@@ -342,11 +334,10 @@ export namespace MonadicParser {
         return RegExp('^(?:' + re.source + ')', flags(re));
     }
 
-
     export function regexp(re: RegExp, group = 0) {
         const anchored = anchoredRegexp(re);
         const expected = '' + re;
-        return new MonadicParser<any>(function (input: any, i: any) {
+        return new MonadicParser((input, i) => {
             const match = anchored.exec(input.slice(i));
             if (match) {
                 if (0 <= group && group <= match.length) {
@@ -476,22 +467,14 @@ export namespace MonadicParser {
     export const newline = alt(crlf, lf, cr).desc('newline');
     export const end = alt(newline, eof);
 
-    export function of(A: any) {
-        return succeed(A);
+    export function of<A>(value: A) {
+        return succeed(value);
     }
 
-    export function regex(A: any) {
-        return regexp(A);
+    export function regex(re: RegExp) {
+        return regexp(re);
     }
 
-    MonadicParser.createLanguage = createLanguage;
-    MonadicParser.seq = seq;
-    MonadicParser.seqMap = seqMap;
-    MonadicParser.of = succeed;
-    MonadicParser.regex = regexp;
-    MonadicParser.regexp = regexp;
-//    MonadicParser.regexp.lookahead = lookahead;
-    // MonadicParser.RegExp = regexp;
 }
 
 function seqPick(idx: number, ...parsers: MonadicParser<any>[]): MonadicParser<any> {
@@ -594,5 +577,3 @@ function assertFunction(x: any) {
         throw new Error('not a function: ' + x);
     }
 }
-
-

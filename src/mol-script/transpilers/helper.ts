@@ -3,8 +3,9 @@
  *
  * @author Alexander Rose <alexander.rose@weirdbyte.de>
  * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
  */
-// import * as Q from 'parsimmon';
+
 import * as P from '../../mol-util/monadic-parser';
 import { MolScriptBuilder } from '../../mol-script/language/builder';
 const B = MolScriptBuilder;
@@ -28,6 +29,16 @@ export function prefix(opParser: P.MonadicParser<any>, nextParser: P.MonadicPars
     return parser;
 }
 
+export function prefixRemoveKet(opParser: P.MonadicParser<any>, nextParser: P.MonadicParser<any>, mapFn: any) {
+    const parser: P.MonadicParser<any> = P.MonadicParser.lazy(() => {
+        return P.MonadicParser.seq(opParser, parser.skip(P.MonadicParser.regexp(/\s*\)/)))
+            .map(x => mapFn(...x))
+            .or(nextParser);
+    });
+    return parser;
+}
+
+
 // Ideally this function would be just like `PREFIX` but reordered like
 // `P.seq(parser, opParser).or(nextParser)`, but that doesn't work. The
 // reason for that is that Parsimmon will get stuck in infinite recursion, since
@@ -47,7 +58,7 @@ export function postfix(opParser: P.MonadicParser<any>, nextParser: P.MonadicPar
     // INPUT  :: "4!!!"
     // PARSE  :: [4, "factorial", "factorial", "factorial"]
     // REDUCE :: ["factorial", ["factorial", ["factorial", 4]]]
-    return P.MonadicParser.seqMap(/* no seqMap() in monadic-parser.ts, any suitable replacement? */
+    return P.MonadicParser.seqMap(
         nextParser,
         opParser.many(),
         (x: any, suffixes: any) =>
@@ -69,7 +80,6 @@ export function binaryRight(opParser: P.MonadicParser<any>, nextParser: P.Monadi
                 P.MonadicParser.of(next),
                 parser
             ).map((x) => {
-                console.log(x);
                 return x;
             }).or(P.MonadicParser.of(next))
         )
@@ -120,21 +130,19 @@ export function combineOperators(opList: any[], rule: P.MonadicParser<any>) {
 
 export function infixOp(re: RegExp, group: number = 0) {
     return P.MonadicParser.whitespace.then(P.MonadicParser.regexp(re, group).skip(P.MonadicParser.whitespace));
-    // return P.optWhitespace.then(P.MonadicParser.regexp(re, group).lookahead(P.whitespace))
-    // return P.MonadicParser.regexp(re, group).skip(P.whitespace
 }
 
 export function prefixOp(re: RegExp, group: number = 0) {
     return P.MonadicParser.regexp(re, group).skip(P.MonadicParser.whitespace);
 }
 
+export function prefixOpNoWhiteSpace(re: RegExp, group: number = 0) {
+    return P.MonadicParser.regexp(re, group).skip(P.MonadicParser.regexp(/\s*/));
+}
+
 export function postfixOp(re: RegExp, group: number = 0) {
     return P.MonadicParser.whitespace.then(P.MonadicParser.regexp(re, group));
 }
-
-// export function functionOp (re: RegExp, rule: P.MonadicParser<any>) {
-//   return P.MonadicParser.regexp(re, group).wrap(P.string('('), P.string(')'))
-// }
 
 export function ofOp(name: string, short?: string) {
     const op = short ? `${name}|${escapeRegExp(short)}` : name;
@@ -287,11 +295,6 @@ export function getFunctionRules(functions: FunctionDict, argRule: P.MonadicPars
 
     return functionsList;
 }
-
-// const rule = P.regex(getNamesRegex(name, ps.abbr)).lookahead(lookahead).map(() => {
-//    if (ps.isUnsupported) errorFn()
-//    return ps.property
-// })
 
 export function getPropertyNameRules(properties: PropertyDict, lookahead: RegExp) {
     const list: P.MonadicParser<any>[] = [];

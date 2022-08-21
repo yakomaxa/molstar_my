@@ -87,10 +87,11 @@
     "Ludovic Autin <autin@scripps.edu>",
     "Michal Malý <michal.maly@ibt.cas.cz>",
     "Jiří Černý <jiri.cerny@ibt.cas.cz>",
-    "Panagiotis Tourlas <panagiot_tourlov@hotmail.com>"
+    "Panagiotis Tourlas <panagiot_tourlov@hotmail.com>",
+    "Koya Sakuma <koya.sakuma.work@gmail.com>"
   ],
   "license": "MIT",
-    "devDependencies": {
+  "devDependencies": {
     "@graphql-codegen/add": "^3.2.0",
     "@graphql-codegen/cli": "^2.9.1",
     "@graphql-codegen/time": "^3.2.0",
@@ -132,7 +133,7 @@
     "webpack": "^5.73.0",
     "webpack-cli": "^4.10.0"
   },
-    "dependencies": {
+  "dependencies": {
     "@types/argparse": "^2.0.10",
     "@types/benchmark": "^2.1.1",
     "@types/compression": "1.7.2",

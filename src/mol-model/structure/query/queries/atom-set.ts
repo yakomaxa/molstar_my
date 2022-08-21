@@ -16,29 +16,21 @@ import { QueryContext, QueryFn } from '../context';
 
 
 export function atomCount(ctx: QueryContext) {
-    return (ctx: QueryContext) => {
-        const all = StructureSelection.Singletons(ctx.currentStructure, ctx.currentStructure);
-        const x: number = StructureSelection.structureCount(all);
-        return x;
-    };
+    return ctx.currentStructure.elementCount;
 }
 
-export function countQuery(ctx: QueryContext, query: StructureQuery) {
+
+export function countQuery(query: StructureQuery) {
     return (ctx: QueryContext) => {
         const sel = query(ctx);
-        const x: number = StructureSelection.structureCount(sel);
-        return x;
+        return StructureSelection.structureCount(sel);
     };
 }
 
-
-// export function propertySet(ctx: QueryContext, prop: UnitTypeProperties) {
-export function propertySet(ctx: QueryContext, prop: QueryFn<any>) {
+export function propertySet(prop: QueryFn<any>) {
     return (ctx: QueryContext) => {
         const set = new Set();
-        const x = getCurrentStructureProperties(ctx, prop, set);
-        //	console.log(x)
-        return x;
+        return getCurrentStructureProperties(ctx, prop, set);
     };
 }
 

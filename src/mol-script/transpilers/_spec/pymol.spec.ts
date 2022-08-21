@@ -3,6 +3,7 @@
  *
  * @author Alexander Rose <alexander.rose@weirdbyte.de>
  * @author Panagiotis Tourlas <panagiot_tourlov@hotmail.com>
+ * @author Koya Sakuma <koya.sakuma.work@gmail.com>
  */
 
 import * as u from './utils';
@@ -10,9 +11,6 @@ import { transpiler } from '../pymol/parser';
 import { keywords } from '../pymol/keywords';
 import { properties } from '../pymol/properties';
 import { operators } from '../pymol/operators';
-
-/* FAULTY IMPORTS */
-// import compile from '../../reference-implementation/molql/compiler';
 
 const general = {
     supported: [
